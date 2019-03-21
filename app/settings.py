@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'graphene_django',
+    'app.sevenelleven.authentication'
 ]
 
 MIDDLEWARE = [
@@ -51,6 +53,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'app.urls'
+
+GRAPHENE = {
+    'SCHEMA': 'app.schema.schema'
+}
 
 TEMPLATES = [
     {
