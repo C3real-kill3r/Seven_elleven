@@ -1,9 +1,19 @@
 import graphene
-import app.sevenelleven.authentication.schema
+from sevenapp import schema
+import graphql_jwt
 
 
-class Query(app.sevenelleven.authentication.schema.Query, graphene.ObjectType):
+class Query(schema.Query, graphene.ObjectType):
     pass
 
 
-schema = graphene.Schema(query=Query)
+class Mutation(
+        schema.Mutation,
+        graphene.ObjectType,
+):
+    token_auth = graphql_jwt.ObtainJSONWebToken.Field()
+    verify_token = graphql_jwt.Verify.Field()
+    refresh_token = graphql_jwt.Refresh.Field()
+
+
+schema = graphene.Schema(query=Query, mutation=Mutation)
