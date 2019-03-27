@@ -4,3 +4,4 @@ postgres==2.2.2
 psycopg2-binary==2.7.7
 pytz==2018.9
 flake8==3.5.0
+jwt==0.6.1
