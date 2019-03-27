@@ -37,3 +37,6 @@ class ErrorHandler():
                     "Make sure your password has a special characters in it")
             else:
                 break
+
+# class PasswordEnryption():
+#     """

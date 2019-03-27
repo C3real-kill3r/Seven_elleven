@@ -1,6 +1,7 @@
 import graphene
 from graphql import GraphQLError
 
+from django.contrib.auth import authenticate
 from graphene_django.types import DjangoObjectType
 
 from app.sevenelleven.validations.validators import ErrorHandler
@@ -63,6 +64,25 @@ class DeleteUser(graphene.Mutation):
             return DeleteUser(user=del_user)
 
 
+class LogIn(graphene.Mutation):
+    user = graphene.Field(Users)
+
+    class Arguments:
+        email = graphene.String()
+        password = graphene.String()
+
+    def mutate(self, info, **kwargs):
+        user = authenticate(
+            email=kwargs['email'],
+            password=kwargs['password'],
+        )
+        if not user:
+            raise GraphQLError("Invalid username or password!")
+
+        return LogIn(user=user)
+
+
 class Mutation(graphene.ObjectType):
     register_user = RegisterUser.Field()
     delete_user = DeleteUser.Field()
+    log_in = LogIn.Field()
