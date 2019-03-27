@@ -15,11 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from django.conf.urls import url
+from django.conf.urls import url, include
 from graphene_django.views import GraphQLView
 from app.schema import schema
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^graphql', GraphQLView.as_view(graphiql=True, schema=schema)),
+    path('', include('app.sevenelleven.webpages.urls')),
 ]
