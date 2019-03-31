@@ -1,6 +1,8 @@
 import graphene
 from graphql import GraphQLError
 
+from django.contrib.auth import authenticate, login
+from graphql_extensions.auth.decorators import login_required
 from graphene_django.types import DjangoObjectType
 
 from app.sevenelleven.validations.validators import ErrorHandler
@@ -15,6 +17,7 @@ class Users(DjangoObjectType):
 class Query(object):
     all_users = graphene.List(Users)
 
+    @login_required
     def resolve_all_users(self, info, **kwargs):
         users = UserModel.objects.all()
         if users.count() == 0:
@@ -53,6 +56,7 @@ class DeleteUser(graphene.Mutation):
     class Arguments:
         username = graphene.String(required=True)
 
+    @login_required
     def mutate(self, info, **kwargs):
         del_user = UserModel.objects.filter(
             username=kwargs['username']).first()
@@ -63,6 +67,26 @@ class DeleteUser(graphene.Mutation):
             return DeleteUser(user=del_user)
 
 
+class LogIn(graphene.Mutation):
+    user = graphene.Field(Users)
+    token = graphene.String()
+
+    class Arguments:
+        email = graphene.String()
+        password = graphene.String()
+
+    def mutate(self, info, **kwargs):
+        user = authenticate(
+            email=kwargs['email'],
+            password=kwargs['password'],
+        )
+        login(info.context, user)
+        if not info.context.user.is_authenticated:
+            raise GraphQLError("Invalid username or password!")
+        return LogIn(user=user)
+
+
 class Mutation(graphene.ObjectType):
     register_user = RegisterUser.Field()
     delete_user = DeleteUser.Field()
+    log_in = LogIn.Field()
