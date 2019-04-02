@@ -6,3 +6,5 @@ pytz==2018.9
 flake8==3.5.0
 jwt==0.6.1
 django-graphql-extensions==0.0.6
+djangorestframework==3.9.2
+djangorestframework-jwt==1.11.0
