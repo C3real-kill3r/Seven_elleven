@@ -1,9 +1,11 @@
 import graphene
 from graphql import GraphQLError
 
-from django.contrib.auth import authenticate, login
 from graphql_extensions.auth.decorators import login_required
 from graphene_django.types import DjangoObjectType
+from rest_framework_jwt.serializers import (
+    JSONWebTokenSerializer,
+    )
 
 from app.sevenelleven.validations.validators import ErrorHandler
 from .models import User as UserModel
@@ -26,6 +28,7 @@ class Query(object):
 
 
 class RegisterUser(graphene.Mutation):
+    """Mutation to register user"""
     user = graphene.Field(Users)
 
     class Arguments:
@@ -50,7 +53,32 @@ class RegisterUser(graphene.Mutation):
         return RegisterUser(user=user)
 
 
+class LogIn(graphene.Mutation):
+    """
+    Mutation to login a user
+    """
+    class Arguments:
+        email = graphene.String(required=True)
+        password = graphene.String(required=True)
+
+    success = graphene.Boolean()
+    errors = graphene.List(graphene.String)
+    token = graphene.String()
+    user = graphene.Field(Users)
+
+    def mutate(self, info, email, password):
+        user = {'email': email, 'password': password}
+        serializer = JSONWebTokenSerializer(data=user)
+        if serializer.is_valid():
+            token = serializer.object['token']
+            user = serializer.object['user']
+            return LogIn(success=True, user=user, token=token, errors=None)
+        else:
+            raise GraphQLError("The password and username dont match, try again")
+
+
 class DeleteUser(graphene.Mutation):
+    """Mutation to delete a user"""
     user = graphene.Field(Users)
 
     class Arguments:
@@ -65,25 +93,6 @@ class DeleteUser(graphene.Mutation):
         else:
             del_user.delete()
             return DeleteUser(user=del_user)
-
-
-class LogIn(graphene.Mutation):
-    user = graphene.Field(Users)
-    token = graphene.String()
-
-    class Arguments:
-        email = graphene.String()
-        password = graphene.String()
-
-    def mutate(self, info, **kwargs):
-        user = authenticate(
-            email=kwargs['email'],
-            password=kwargs['password'],
-        )
-        login(info.context, user)
-        if not info.context.user.is_authenticated:
-            raise GraphQLError("Invalid username or password!")
-        return LogIn(user=user)
 
 
 class Mutation(graphene.ObjectType):

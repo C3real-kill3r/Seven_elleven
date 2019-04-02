@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'graphene_django',
     'app.sevenelleven.authentication',
     'app.sevenelleven.webpages',
+    'rest_framework',
+    'rest_framework_jwt',
 ]
 
 MIDDLEWARE = [
@@ -49,9 +51,10 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'graphql_jwt.middleware.JSONWebTokenMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'app.sevenelleven.authentication.middleware.JWTAuthenticationMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -61,11 +64,12 @@ AUTHENTICATION_BACKENDS = [
 
 ROOT_URLCONF = 'app.urls'
 
+JWT_AUTH = {
+    'JWT_ALLOW_REFRESH': True,
+    }
+
 GRAPHENE = {
     'SCHEMA': 'app.schema.schema',
-    'MIDDLEWARE': [
-        'graphql_jwt.middleware.JSONWebTokenMiddleware',
-    ],
 }
 
 TEMPLATES = [
