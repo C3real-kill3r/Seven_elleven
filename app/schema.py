@@ -1,12 +1,12 @@
 import graphene
-import app.sevenelleven.authentication.schema
+import app.seveneleven.authentication.schema
 
 
-class Query(app.sevenelleven.authentication.schema.Query, graphene.ObjectType):
+class Query(app.seveneleven.authentication.schema.Query, graphene.ObjectType):
     pass
 
 
-class Mutation(app.sevenelleven.authentication.schema.Mutation, graphene.ObjectType):
+class Mutation(app.seveneleven.authentication.schema.Mutation, graphene.ObjectType):
     pass
 
 
