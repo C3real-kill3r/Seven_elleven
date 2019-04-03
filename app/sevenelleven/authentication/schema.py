@@ -4,11 +4,12 @@ from graphql import GraphQLError
 from graphql_extensions.auth.decorators import login_required
 from graphene_django.types import DjangoObjectType
 from rest_framework_jwt.serializers import (
-    JSONWebTokenSerializer,
-    )
+    JSONWebTokenSerializer, )
 
 from app.sevenelleven.validations.validators import ErrorHandler
 from .models import User as UserModel
+from ..helpers.email_helpers import Email
+from django.core.mail import send_mail
 
 
 class Users(DjangoObjectType):
@@ -44,12 +45,15 @@ class RegisterUser(graphene.Mutation):
             username=kwargs['username'],
             email=kwargs['email'],
         )
+
         if UserModel.objects.filter(username=kwargs['username']).exists():
             raise GraphQLError("Username already exists")
         elif UserModel.objects.filter(email=kwargs['email']).exists():
             raise GraphQLError("Email already exists")
         user.set_password(kwargs['password'])
         user.save()
+        Email().send_account_activation_email(user)
+
         return RegisterUser(user=user)
 
 
@@ -57,6 +61,7 @@ class LogIn(graphene.Mutation):
     """
     Mutation to login a user
     """
+
     class Arguments:
         email = graphene.String(required=True)
         password = graphene.String(required=True)
@@ -74,7 +79,8 @@ class LogIn(graphene.Mutation):
             user = serializer.object['user']
             return LogIn(success=True, user=user, token=token, errors=None)
         else:
-            raise GraphQLError("The password and username dont match, try again")
+            raise GraphQLError(
+                "The password and username dont match, try again")
 
 
 class DeleteUser(graphene.Mutation):

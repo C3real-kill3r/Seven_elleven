@@ -1,6 +1,5 @@
-from django.contrib.auth.models import (
-    AbstractBaseUser, BaseUserManager, PermissionsMixin
-)
+from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
+                                        PermissionsMixin)
 from django.db import models
 
 
@@ -100,3 +99,20 @@ class User(AbstractBaseUser, PermissionsMixin):
         This string is used when a `User` is printed in the console.
         """
         return self.email
+
+    @property
+    def get_full_name(self):
+        """
+        This method is required by Django for things like handling emails.
+        Typically, this would be the user's first and last name. Since we do
+        not store the user's real name, we return their username instead.
+        """
+        return self.username
+
+    def get_short_name(self):
+        """
+        This method is required by Django for things like handling emails.
+        Typically, this would be the user's first name. Since we do not store
+        the user's real name, we return their username instead.
+        """
+        return self.username
