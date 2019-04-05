@@ -39,8 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'graphene_django',
-    'app.sevenelleven.authentication',
-    'app.sevenelleven.webpages',
+    'app.seveneleven.authentication',
+    'app.seveneleven.webpages',
     'rest_framework',
     'rest_framework_jwt',
 ]
@@ -54,11 +54,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    'app.sevenelleven.authentication.middleware.JWTAuthenticationMiddleware',
+    'app.seveneleven.authentication.middleware.JWTAuthenticationMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = [
-    'graphql_jwt.backends.JSONWebTokenBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
@@ -112,6 +111,20 @@ if 'test' in sys.argv or 'test_coverage' in sys.argv:
         }
     }
 
+# sendGrid API Settings
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_HOST_SENDER = os.getenv("EMAIL_HOST_SENDER")
+EMAIL_USE_TLS = True
+
+CLOUDINARY = {
+    'cloud_name': os.getenv('CLOUDINARY_NAME'),
+    'api_key': os.getenv('CLOUDINARY_KEY'),
+    'api_secret': os.getenv('CLOUDINARY_SECRET'),
+    'secure': True
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
