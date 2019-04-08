@@ -1,7 +1,6 @@
 Django==2.1.7
 graphene-django==2.2.0
 postgres==2.2.2
-psycopg2-binary==2.7.7
 pytz==2018.9
 flake8==3.5.0
 PyJWT==1.7.1
@@ -12,3 +11,7 @@ pytest-django==3.1.2
 django-graphql-extensions==0.0.6
 djangorestframework==3.9.2
 djangorestframework-jwt==1.11.0
+uwsgi >=2.0,<2.1
+dj-database-url>=0.5,<0.6
+yapf
+psycopg2>=2.7,<2.8
