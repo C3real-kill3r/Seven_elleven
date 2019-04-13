@@ -4,12 +4,14 @@ from graphql import GraphQLError
 from graphene_django.types import DjangoObjectType
 from rest_framework_jwt.serializers import (
     JSONWebTokenSerializer,
+    RefreshJSONWebTokenSerializer
     )
 from django.contrib.auth import login
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_text
 from django.contrib.auth.tokens import default_token_generator
 
+from .serializers import PasswordResetConfirmRetypeSerializer
 from app.seveneleven.validations.validators import ErrorHandler
 from .models import User as UserModel
 from ..helpers.email_helpers import Email
@@ -111,6 +113,91 @@ class LogIn(graphene.Mutation):
             raise GraphQLError("The password and username dont match, try again")
 
 
+class RefreshToken(graphene.Mutation):
+    """
+    Mutation to reauthenticate a user
+    """
+    class Arguments:
+        token = graphene.String(required=True)
+
+    success = graphene.Boolean()
+    errors = graphene.List(graphene.String)
+    token = graphene.String()
+
+    def mutate(self, info, token):
+        serializer = RefreshJSONWebTokenSerializer(data={'token': token})
+        if serializer.is_valid():
+            return RefreshToken(
+                success=True,
+                token=serializer.object['token'],
+                errors=None
+                )
+        else:
+            return RefreshToken(
+                success=False,
+                token=None,
+                errors=['email', 'Unable to login with provided credentials.']
+                )
+
+
+class ResetPassword(graphene.Mutation):
+    """
+    Mutation for requesting a password reset email
+    """
+
+    class Arguments:
+        email = graphene.String(required=True)
+
+    success = graphene.Boolean()
+    message = graphene.List(graphene.String)
+
+    def mutate(self, info, email):
+        user = UserModel.objects.filter(email=email).first()
+        if user is not None:
+            Email().send_password_reset_email(user)
+            return ResetPassword(
+                success=True,
+                message=["Check your email to get the reset link"])
+        else:
+            return ResetPassword(
+                success=False,
+                message=["The email provided is incorrect, try again"])
+
+
+class ResetPasswordConfirm(graphene.Mutation):
+    """
+    Mutation for requesting a password reset email
+    """
+
+    class Arguments:
+        uid = graphene.String(required=True)
+        token = graphene.String(required=True)
+        email = graphene.String(required=True)
+        new_password = graphene.String(required=True)
+        re_new_password = graphene.String(required=True)
+
+    success = graphene.Boolean()
+    message = graphene.List(graphene.String)
+
+    def mutate(self, info, uid, token, email, new_password, re_new_password):
+        serializer = PasswordResetConfirmRetypeSerializer(data={
+            'uid': uid,
+            'token': token,
+            'email': email,
+            'new_password': new_password,
+            're_new_password': re_new_password,
+        })
+        if serializer.is_valid():
+            serializer.user.set_password(serializer.data['new_password'])
+            serializer.user.save()
+            return ResetPasswordConfirm(
+                success=True,
+                message=["Your password has been successfully reset"])
+        else:
+            return ResetPasswordConfirm(
+                success=False)
+
+
 class DeleteUser(graphene.Mutation):
     """Mutation to delete a user"""
     user = graphene.Field(Users)
@@ -133,3 +220,5 @@ class Mutation(graphene.ObjectType):
     delete_user = DeleteUser.Field()
     log_in = LogIn.Field()
     activate = Activate.Field()
+    reset_passwrord = ResetPassword.Field()
+    reset_passwrord_confirm = ResetPasswordConfirm.Field()
