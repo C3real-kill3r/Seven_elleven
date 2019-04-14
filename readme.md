@@ -1,4 +1,7 @@
 [![CircleCI](https://circleci.com/gh/C3real-kill3r/Seven_elleven.svg?style=svg)](https://circleci.com/gh/C3real-kill3r/Seven_elleven)
+[![Maintainability](https://api.codeclimate.com/v1/badges/76bb7a1e636a7c3c47cc/maintainability)](https://codeclimate.com/github/C3real-kill3r/Seven_elleven/maintainability)
+[![Coverage Status](https://coveralls.io/repos/github/C3real-kill3r/Seven_elleven/badge.svg?branch=develop)](https://coveralls.io/github/C3real-kill3r/Seven_elleven?branch=develop)
+[![Build Status](https://travis-ci.org/C3real-kill3r/Seven_elleven.svg?branch=develop)](https://travis-ci.org/C3real-kill3r/Seven_elleven)
 
 # Seven Eleven
 

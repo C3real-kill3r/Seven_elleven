@@ -5,20 +5,35 @@
 version: 2
 jobs:
   build:
+    working_directory: ~/repo
     docker:
       # specify the version you desire here
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
-      - image: circleci/python:3.6.1
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
-
-    working_directory: ~/repo
+      - image: circleci/python:3.6.2-stretch-browsers
+        environment:
+          DATABASE_URL: postgresql://root@localhost/circle_test
+      - image: circleci/postgres:9.6.5-alpine-ram
+        environment:
+          POSTGRES_USER: root
+          POSTGRES_DB: circle_test
+          POSTGRES_PASSWORD: ""
 
     steps:
       - checkout
+      - run:
+          name: install dockerize
+          command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+          environment:
+            DOCKERIZE_VERSION: v0.3.0
+      - run:
+          name: Wait for db
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+      - run: sudo apt-get update
+      - run: sudo apt-get install postgresql-client-9.6
+      - run: whoami
+      #     psql \
+      #     -d $TEST_DATABASE_URL \
+      #     -c "CREATE TABLE test circle_test;"
 
       # Download and cache dependencies
       - restore_cache:
@@ -38,6 +53,27 @@ jobs:
           paths:
             - ./venv
           key: v1-dependencies-{{ checksum "requirements.txt" }}
+
+# to fix postgresQL client
+
+      # - run:
+      #       # https://discuss.circleci.com/t/how-do-you-use-postgres-9-6-x-or-9-x-x/9855/3
+      #       name: Install PostgreSQL Client
+      #       command: |
+      #         sudo su -c "echo 'deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main' >> /etc/apt/sources.list"
+      #         wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+      #         sudo apt-get install postgresql-9.6
+      #         sudo service postgresql stop
+      #         sudo mv /usr/lib/* /usr/lib/postgresql/9.6
+      #         sudo mv /etc/postgresql-9.6/9.6 /etc/postgresql/9.6
+      #         sudo service postgresql start 9.6
+
+      #         sudo -u postgres psql -p 5432 -c "create user ubuntu with password 'ubuntu';"
+      #         sudo -u postgres psql -p 5432 -c "alter user ubuntu with superuser;"
+
+      #         sudo -u postgres psql -p 5432 -c "create database circle_test;"
+
+      #         sudo -u postgres psql -p 5432 -c "select * from circle_test;"
 
       # run tests!
       # this example uses Django's built-in test-runner

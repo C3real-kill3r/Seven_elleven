@@ -6,6 +6,9 @@ pytz==2018.9
 flake8==3.5.0
 PyJWT==1.7.1
 djoser==1.1.5
+pytest==4.4.0
+pytest-cov==2.6.1
+pytest-django==3.1.2
 django-graphql-extensions==0.0.6
 djangorestframework==3.9.2
 djangorestframework-jwt==1.11.0
