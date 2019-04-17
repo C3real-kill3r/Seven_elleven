@@ -14,7 +14,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Installing
 
-* clone the project on your local machine
+* clone the project to your local machine
 * when in the project directory on your local machine, create a virtual environment
 ```
 virtualenv --python=python3 venv
@@ -32,7 +32,19 @@ pip install -r requirements.txt
 python manage.py runserver
 ```
 
+### Running tests
 
+* to run the automated test run
+
+```
+python -m pytest
+```
+
+* to run tests and generate test coverage
+
+```
+py.test --cov-report term --cov=.
+```
 ## Built With
 
 * [Django](https://www.djangoproject.com/) - Web development framework
