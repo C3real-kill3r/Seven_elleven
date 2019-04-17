@@ -111,6 +111,7 @@ if 'test' in sys.argv or 'test_coverage' in sys.argv:
         }
     }
 
+
 # sendGrid API Settings
 EMAIL_HOST = os.getenv('EMAIL_HOST')
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')

@@ -1,0 +1,32 @@
+language: python
+
+python:
+  - "3.6"
+
+service:
+  - postgresql
+
+addons:
+  postgresql: '9.6'
+
+install:
+  - pip3 install -r requirements.txt
+  - pip3 install coverage
+  - pip3 install coveralls
+
+cache:
+  directories:
+    - $HOME/.cache/pip
+
+before_script:
+  - export DB_NAME="seven_eleven"
+  - psql -c 'create database seven_eleven;' -U postgres
+  - python manage.py makemigrations
+  - python manage.py migrate
+
+script:
+  - python -m pytest
+  - py.test --cov-report term --cov=.
+
+after_script:
+  - coveralls
