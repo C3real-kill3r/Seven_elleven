@@ -8,6 +8,8 @@ service:
 
 addons:
   postgresql: '9.6'
+  code_climate:
+    repo_token: "e3b243c35c4f77914807ed9d81a4b5b6ef97475c5006e921a5688fb76f915317"
 
 install:
   - pip3 install -r requirements.txt
@@ -30,3 +32,4 @@ script:
 
 after_script:
   - coveralls
+  - vendor/bin/test-reporter
