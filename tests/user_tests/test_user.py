@@ -7,7 +7,8 @@ from test_fixtures.authentication.users_fixture import (
     login_query,
     login_wrong_password,
     delete_user_query,
-    delete_non_existent_user_query
+    delete_non_existent_user_query,
+    get_users_query,
 )
 
 
@@ -44,3 +45,12 @@ class TestUser(GraphQLTestCase):
     def test_delete_user_failure(self):
         resp = self.query(delete_non_existent_user_query, op_name='deleteUser')
         self.assertIn("Rybczynsk does not exist", str(resp))
+
+    def test_get_registred_users(self):
+        self.query(registration_query, op_name='registerUser')
+        resp = self.query(get_users_query, op_name='allUsers')
+        self.assertIn("Rybczynski", str(resp))
+
+    def test_get_registred_users_empty_model(self):
+        resp = self.query(get_users_query, op_name='allUsers')
+        self.assertIn("Users model is empty", str(resp))
