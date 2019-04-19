@@ -120,3 +120,13 @@ mutation {
   }
 }
 """
+
+get_users_query = """
+query {
+  allUsers {
+    id
+    username
+    email
+  }
+}
+"""

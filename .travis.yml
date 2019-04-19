@@ -15,6 +15,7 @@ install:
   - pip3 install -r requirements.txt
   - pip3 install coverage
   - pip3 install coveralls
+  - pip3 install codeclimate-test-reporter
 
 cache:
   directories:
@@ -32,4 +33,6 @@ script:
 
 after_script:
   - coveralls
-  - vendor/bin/test-reporter
+
+after_sucess:
+  - CODECLIMATE_REPO_TOKEN=e3b243c35c4f77914807ed9d81a4b5b6ef97475c5006e921a5688fb76f915317 codeclimate-test-reporter
