@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 import sys
+import datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -40,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'graphene_django',
     'app.seveneleven.authentication',
+    'app.seveneleven.profiles',
     'app.seveneleven.webpages',
     'rest_framework',
     'rest_framework_jwt',
@@ -65,6 +67,10 @@ ROOT_URLCONF = 'app.urls'
 
 JWT_AUTH = {
     'JWT_ALLOW_REFRESH': True,
+    'JWT_VERIFY': True,
+    'JWT_VERIFY_EXPIRATION': True,
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3000),
+    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
     }
 
 GRAPHENE = {
